@@ -1,13 +1,44 @@
+
+import { useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, Button, TextInput, View } from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  Button,
+  TextInput,
+  View,
+  FlatList,
+} from 'react-native';
+
+import Item from './src/components/items';
 
 export default function App() {
+  const [text, setText] = useState('');
+  const [tasks, setTasklist] = useState([]);
+
+  function handleAddTask() {
+    if (text.trim() === '') return;
+
+    setTasklist([...tasks, text.trim()]);
+    setText('');
+  }
+
+  function handleInputText(text) {
+    setText(text);
+  }
+
   return (
     <View style={styles.container}>
       <View style={styles.topSection}>
         <View style={styles.inputContainer}>
-          <TextInput style={styles.input} placeholder="Zadaj úlohu" />
-          <Button title="ADD" onPress={() => {}} />
+          <TextInput
+            value={text}
+            onChangeText={handleInputText}
+            style={styles.input}
+            placeholder="Zadaj úlohu"
+          />
+
+          <Button title="ADD" onPress={handleAddTask} />
         </View>
       </View>
 
@@ -15,8 +46,17 @@ export default function App() {
 
       <View style={styles.bottomSection}>
         <View style={styles.taskContainer}>
-          <Text style={styles.taskTitle}>UDALOSTI</Text>
-
+          <FlatList
+            data={tasks}
+            renderItem={({ item }) => <Item title={item} />}
+            keyExtractor={(item, index) => index.toString()}
+            style={styles.list}
+            ListEmptyComponent={
+              <Text style={styles.emptyText}>
+                Zatiaľ nemáš žiadne úlohy.
+              </Text>
+            }
+          />
         </View>
       </View>
 
@@ -31,22 +71,25 @@ const styles = StyleSheet.create({
     backgroundColor: '#faf6f6',
     paddingTop: 60,
   },
+
   topSection: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 20,
   },
+
   inputContainer: {
-    flexDirection: 'row', 
+    flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#e3f2fd', 
+    backgroundColor: '#e3f2fd',
     padding: 15,
     borderRadius: 12,
     borderWidth: 1,
     borderColor: '#90caf9',
     width: '100%',
   },
+
   input: {
     flex: 1,
     height: 40,
@@ -72,8 +115,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingTop: 10,
   },
+
   taskContainer: {
-    backgroundColor: '#e8f5e9', 
+    backgroundColor: '#e8f5e9',
     padding: 20,
     borderRadius: 12,
     width: '100%',
@@ -81,13 +125,15 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     borderWidth: 1,
     borderColor: '#a5d6a7',
-    alignItems: 'center',
   },
-  taskTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#2e7d32',
-    marginBottom: 10,
+
+  list: {
+    width: '100%',
+  },
+
+  emptyText: {
+    textAlign: 'center',
+    color: '#666666',
+    fontSize: 16,
   },
 });
-
